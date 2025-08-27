@@ -1,0 +1,47 @@
+{
+  "name": "motivation-letter-enhancer",
+  "version": "1.0.0",
+  "description": "A production-ready web application that enhances motivation letters using AI-powered analysis via N8N webhooks",
+  "main": "index.html",
+  "scripts": {
+    "start": "python3 -m http.server 8000",
+    "start:node": "npx http-server -p 8000",
+    "start:php": "php -S localhost:8000",
+    "dev": "python3 -m http.server 8000",
+    "build": "echo 'No build step required - this is a static web application'",
+    "test": "echo 'Open demo.html in your browser to test the application'",
+    "lint": "echo 'No linting configured - this is a static web application'"
+  },
+  "keywords": [
+    "motivation-letter",
+    "ai-enhancement",
+    "n8n",
+    "webhook",
+    "text-processing",
+    "file-upload",
+    "diff-view",
+    "responsive-design",
+    "accessibility"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/motivation-letter-enhancer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/motivation-letter-enhancer/issues"
+  },
+  "homepage": "https://github.com/yourusername/motivation-letter-enhancer#readme",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
+}
