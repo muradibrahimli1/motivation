@@ -3,7 +3,7 @@
 
 const APP_CONFIG = {
     // N8N Webhook Configuration
-    N8N_WEBHOOK_URL: '', // ← REQUIRED: Set your N8N webhook URL here
+    N8N_WEBHOOK_URL: 'https://n8n.dayeler.com/webhook/motivation-letter-enhancer', // ← Your N8N webhook URL
     
     // File Settings
     MAX_FILE_SIZE: 2 * 1024 * 1024, // 2MB in bytes
