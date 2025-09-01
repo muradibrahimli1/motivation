@@ -25,7 +25,7 @@ const elements = {
     uploadTab: document.getElementById('upload-tab'),
     pastePanel: document.getElementById('paste-panel'),
     uploadPanel: document.getElementById('upload-panel'),
-    
+
     // Input
     letterText: document.getElementById('letter-text'),
     charCounter: document.getElementById('char-counter'),
@@ -37,11 +37,11 @@ const elements = {
     fileSize: document.getElementById('file-size'),
     fileStatus: document.getElementById('file-status'),
     removeFile: document.getElementById('remove-file'),
-    
+
     // Analyze
     analyzeButton: document.getElementById('analyze-button'),
     loadingSpinner: document.getElementById('loading-spinner'),
-    
+
     // Output
     outputSection: document.getElementById('output-section'),
     originalText: document.getElementById('original-text'),
@@ -49,12 +49,12 @@ const elements = {
     diffToggle: document.getElementById('diff-toggle'),
     diffView: document.getElementById('diff-view'),
     diffContent: document.getElementById('diff-content'),
-    
+
     // Actions
     copyOriginal: document.getElementById('copy-original'),
     copyEnhanced: document.getElementById('copy-enhanced'),
     downloadEnhanced: document.getElementById('download-enhanced'),
-    
+
     // Toast
     toastContainer: document.getElementById('toast-container')
 };
@@ -70,7 +70,7 @@ function initializeApp() {
     setupFileHandling();
     setupTextInput();
     setupActions();
-    
+
     // Check if webhook URL is configured
     if (!CONFIG.N8N_WEBHOOK_URL) {
         showToast('warning', 'Configuration Required', 'Please configure the N8N webhook URL in the script configuration.');
@@ -82,27 +82,27 @@ function setupEventListeners() {
     // Tab switching
     elements.pasteTab.addEventListener('click', () => switchTab('paste'));
     elements.uploadTab.addEventListener('click', () => switchTab('upload'));
-    
+
     // File handling
     elements.filePicker.addEventListener('click', () => elements.fileInput.click());
     elements.fileInput.addEventListener('change', handleFileSelect);
     elements.removeFile.addEventListener('click', removeFile);
-    
+
     // Drag and drop
     setupDragAndDrop();
-    
+
     // Text input
     elements.letterText.addEventListener('input', handleTextInput);
-    
+
     // Analyze button
     elements.analyzeButton.addEventListener('click', analyzeLetter);
-    
+
     // Output actions
     elements.diffToggle.addEventListener('click', toggleDiffView);
     elements.copyOriginal.addEventListener('click', () => copyText(state.originalText, 'Original text'));
     elements.copyEnhanced.addEventListener('click', () => copyText(state.enhancedText, 'Enhanced text'));
     elements.downloadEnhanced.addEventListener('click', downloadEnhancedText);
-    
+
     // Keyboard navigation
     setupKeyboardNavigation();
 }
@@ -129,7 +129,7 @@ function switchTab(tabName) {
         elements.uploadPanel.classList.add('active');
         elements.pastePanel.classList.remove('active');
     }
-    
+
     state.currentTab = tabName;
     updateAnalyzeButton();
 }
@@ -141,38 +141,38 @@ function setupFileHandling() {
 
 function setupDragAndDrop() {
     const uploadArea = elements.uploadArea;
-    
+
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
         uploadArea.addEventListener(eventName, preventDefaults, false);
     });
-    
+
     function preventDefaults(e) {
         e.preventDefault();
         e.stopPropagation();
     }
-    
+
     ['dragenter', 'dragover'].forEach(eventName => {
         uploadArea.addEventListener(eventName, highlight, false);
     });
-    
+
     ['dragleave', 'drop'].forEach(eventName => {
         uploadArea.addEventListener(eventName, unhighlight, false);
     });
-    
+
     function highlight() {
         uploadArea.classList.add('dragover');
     }
-    
+
     function unhighlight() {
         uploadArea.classList.remove('dragover');
     }
-    
+
     uploadArea.addEventListener('drop', handleDrop, false);
-    
+
     function handleDrop(e) {
         const dt = e.dataTransfer;
         const files = dt.files;
-        
+
         if (files.length > 0) {
             handleFile(files[0]);
         }
@@ -191,13 +191,13 @@ function handleFile(file) {
     if (!validateFile(file)) {
         return;
     }
-    
+
     // Store file data
     state.fileData = file;
-    
+
     // Display file info
     displayFileInfo(file);
-    
+
     // Extract text based on file type
     extractTextFromFile(file);
 }
@@ -208,14 +208,14 @@ function validateFile(file) {
         showToast('error', 'File Too Large', `File size must be less than ${formatFileSize(CONFIG.MAX_FILE_SIZE)}`);
         return false;
     }
-    
+
     // Check file extension
     const extension = '.' + file.name.split('.').pop().toLowerCase();
     if (!CONFIG.SUPPORTED_FORMATS.includes(extension)) {
         showToast('error', 'Unsupported Format', `Please use one of these formats: ${CONFIG.SUPPORTED_FORMATS.join(', ')}`);
         return false;
     }
-    
+
     return true;
 }
 
@@ -229,7 +229,7 @@ function displayFileInfo(file) {
 
 function extractTextFromFile(file) {
     const extension = '.' + file.name.split('.').pop().toLowerCase();
-    
+
     if (extension === '.txt' || extension === '.md') {
         extractTextFile(file);
     } else if (extension === '.pdf') {
@@ -262,13 +262,13 @@ function extractPdfText(file) {
             const typedarray = new Uint8Array(e.target.result);
             const pdf = await pdfjsLib.getDocument(typedarray).promise;
             let text = '';
-            
+
             for (let i = 1; i <= pdf.numPages; i++) {
                 const page = await pdf.getPage(i);
                 const textContent = await page.getTextContent();
                 text += textContent.items.map(item => item.str).join(' ') + '\n';
             }
-            
+
             if (text.trim()) {
                 state.currentText = text;
                 state.originalText = text;
@@ -280,7 +280,7 @@ function extractPdfText(file) {
             console.error('PDF extraction error:', error);
             updateFileStatus('error', 'Failed to extract PDF text. Please paste the text manually.');
         }
-        
+
         updateAnalyzeButton();
         updateCharCounter();
     };
@@ -293,7 +293,7 @@ function extractDocxText(file) {
         try {
             const result = await mammoth.extractRawText({ arrayBuffer: e.target.result });
             const text = result.value;
-            
+
             if (text.trim()) {
                 state.currentText = text;
                 state.originalText = text;
@@ -305,7 +305,7 @@ function extractDocxText(file) {
             console.error('DOCX extraction error:', error);
             updateFileStatus('error', 'Failed to extract DOCX text. Please paste the text manually.');
         }
-        
+
         updateAnalyzeButton();
         updateCharCounter();
     };
@@ -363,15 +363,15 @@ async function analyzeLetter() {
         showToast('error', 'Configuration Error', 'N8N webhook URL is not configured. Please check the script configuration.');
         return;
     }
-    
+
     if (!state.currentText.trim()) {
         showToast('error', 'No Content', 'Please provide some text to analyze.');
         return;
     }
-    
+
     // Set loading state
     setLoadingState(true);
-    
+
     try {
         // Send to N8N webhook
         const response = await fetch(CONFIG.N8N_WEBHOOK_URL, {
@@ -384,22 +384,22 @@ async function analyzeLetter() {
                 timestamp: new Date().toISOString()
             })
         });
-        
+
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
+
         const result = await response.json();
-        
+        const jsonResult = JSON.parse(result.enhancedText)
         // Handle the response
         if (result.enhancedText) {
-            state.enhancedText = result.enhancedText;
+            state.enhancedText = jsonResult.improved_text;
             displayResults();
             showToast('success', 'Analysis Complete', 'Your motivation letter has been enhanced successfully!');
         } else {
             throw new Error('No enhanced text received from the API');
         }
-        
+
     } catch (error) {
         console.error('Analysis error:', error);
         showToast('error', 'Analysis Failed', 'Failed to enhance your letter. Please try again or check your connection.');
@@ -410,7 +410,7 @@ async function analyzeLetter() {
 
 function setLoadingState(loading) {
     state.isAnalyzing = loading;
-    
+
     if (loading) {
         elements.loadingSpinner.style.display = 'block';
         elements.analyzeButton.querySelector('.button-text').textContent = 'Analyzing...';
@@ -425,11 +425,11 @@ function setLoadingState(loading) {
 function displayResults() {
     // Show output section
     elements.outputSection.style.display = 'block';
-    
+
     // Display texts
     elements.originalText.textContent = state.originalText;
     elements.enhancedText.textContent = state.enhancedText;
-    
+
     // Scroll to output
     elements.outputSection.scrollIntoView({ behavior: 'smooth' });
 }
@@ -441,7 +441,7 @@ function setupActions() {
 
 function toggleDiffView() {
     const isPressed = elements.diffToggle.getAttribute('aria-pressed') === 'true';
-    
+
     if (isPressed) {
         // Hide diff
         elements.diffToggle.setAttribute('aria-pressed', 'false');
@@ -464,7 +464,7 @@ function generateDiff() {
             matching: 'lines',
             outputFormat: 'side-by-side'
         });
-        
+
         elements.diffContent.innerHTML = diff;
     } catch (error) {
         console.error('Diff generation error:', error);
@@ -487,7 +487,7 @@ function downloadEnhancedText() {
         showToast('error', 'No Content', 'No enhanced text to download');
         return;
     }
-    
+
     const blob = new Blob([state.enhancedText], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -497,7 +497,7 @@ function downloadEnhancedText() {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    
+
     showToast('success', 'Downloaded!', 'Enhanced text downloaded successfully');
 }
 
@@ -505,7 +505,7 @@ function downloadEnhancedText() {
 function showToast(type, title, message) {
     const toast = createToast(type, title, message);
     elements.toastContainer.appendChild(toast);
-    
+
     // Auto-remove after timeout
     setTimeout(() => {
         if (toast.parentNode) {
@@ -517,9 +517,9 @@ function showToast(type, title, message) {
 function createToast(type, title, message) {
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
-    
+
     const icon = getToastIcon(type);
-    
+
     toast.innerHTML = `
         ${icon}
         <div class="toast-content">
@@ -533,11 +533,11 @@ function createToast(type, title, message) {
             </svg>
         </button>
     `;
-    
+
     // Add close functionality
     const closeBtn = toast.querySelector('.toast-close');
     closeBtn.addEventListener('click', () => toast.remove());
-    
+
     return toast;
 }
 
@@ -564,7 +564,7 @@ function getToastIcon(type) {
             <line x1="12" y1="8" x2="12.01" y1="8"></line>
         </svg>`
     };
-    
+
     return icons[type] || icons.info;
 }
 
@@ -576,11 +576,11 @@ function setupKeyboardNavigation() {
             // Handle shift+tab navigation
             return;
         }
-        
+
         if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
             const tabs = [elements.pasteTab, elements.uploadTab];
             const currentIndex = tabs.findIndex(tab => tab.classList.contains('active'));
-            
+
             if (currentIndex !== -1) {
                 let newIndex;
                 if (e.key === 'ArrowLeft') {
@@ -588,12 +588,12 @@ function setupKeyboardNavigation() {
                 } else {
                     newIndex = currentIndex < tabs.length - 1 ? currentIndex + 1 : 0;
                 }
-                
+
                 tabs[newIndex].click();
                 e.preventDefault();
             }
         }
-        
+
         // Enter key on analyze button
         if (e.key === 'Enter' && document.activeElement === elements.analyzeButton && !elements.analyzeButton.disabled) {
             analyzeLetter();
